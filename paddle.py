@@ -1,59 +1,49 @@
 from turtle import Turtle
+from data import paddle_data
 
 # defining global sizes & limitations
-PADDLE_SIZE = 10
-PADDLE_INCREMENT = 20
-PADDLE_LEN = (PADDLE_SIZE * PADDLE_INCREMENT) - 10
-PADDLE_COLOR = 'white'
-PADDLE_MOVEMENT = 50
-PADDLE_STARTY = (PADDLE_LEN / 2)
-PADDLE_STARTX = 590
-TOP_BOUNDARY = 495
-BOT_BOUNDARY = 485
+PADDLE_SIZE = paddle_data['PADDLE_SIZE']
+PADDLE_COLOR = paddle_data['PADDLE_COLOR']
+
+TOP_BOUNDARY = paddle_data['TOP_BOUNDARY']
+BOT_BOUNDARY = paddle_data['BOT_BOUNDARY']
+
+PADDLE_STARTX = paddle_data['PADDLE_STARTX']
+PADDLE_STARTY = paddle_data['PADDLE_STARTY']
+PADDLE_MOVEMENT = paddle_data['PADDLE_MOVEMENT']
+
 
 # defining a paddle class with turtles
-
-
 class Paddle:
     def __init__(self, side):
-        # initializing the paddle creates multiple squares lined up to make a paddle based on the side inputted.
+        # Initialize a turtle and give all initial setup, then append to self to be accessible.
+        self.obj = []
         x = 1
         if side == 'l':
             x = -1
-        self.dotted_collection = []
+        pad = Turtle()
+        pad.speed('fastest')
+        pad.shape('square')
+        pad.shapesize(PADDLE_SIZE[0], PADDLE_SIZE[1])
+        pad.color(PADDLE_COLOR)
+        pad.penup()
         start_x = PADDLE_STARTX * x
-        start_y = PADDLE_STARTY
-        # create turtles to make a paddle
-        for _ in range(PADDLE_SIZE):
-            _ = Turtle()
-            _.speed('fastest')
-            _.shape('square')
-            _.color(PADDLE_COLOR)
-            _.penup()
-            _.goto(start_x, start_y)
-            start_y -= PADDLE_INCREMENT
-            self.dotted_collection.append(_)
+        pad.goto(start_x, PADDLE_STARTY)
+        self.obj.append(pad)
+        self.paddle = self.obj[0]
         # End of initial creation.
         # Attributes
         self.player = side
-        self.top = self.dotted_collection[0]
-        self.bot = self.dotted_collection[PADDLE_SIZE - 1]
-        self.top_half = []
-        self.bot_half = []
+        self.x = self.paddle.xcor()
+        self.y = self.paddle.ycor()
 
     # paddle movement
     def up(self):
-        if self.top.ycor() < TOP_BOUNDARY:
-            for turtle in self.dotted_collection:
-                turtle.setheading(90)
-                turtle.forward(PADDLE_MOVEMENT)
+        if (self.y + (PADDLE_SIZE[0] / 2) * 20) + PADDLE_MOVEMENT < TOP_BOUNDARY:
+            self.y = self.y + PADDLE_MOVEMENT
+            self.paddle.goto(self.x, self.y)
 
     def down(self):
-        if self.bot.ycor() > -BOT_BOUNDARY:
-            for turtle in self.dotted_collection:
-                turtle.setheading(270)
-                turtle.forward(PADDLE_MOVEMENT)
-
-    def update_paddle(self):
-        self.top_half = self.dotted_collection[0:5]
-        self.bot_half = self.dotted_collection[5:10]
+        if (self.y - (PADDLE_SIZE[0] / 2) * 20) - PADDLE_MOVEMENT > BOT_BOUNDARY:
+            self.y = self.y - PADDLE_MOVEMENT
+            self.paddle.goto(self.x, self.y)
